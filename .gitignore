@@ -1,0 +1,10 @@
+# Ignorar archivos y directorios de compilación
+build/
+install/
+log/
+
+# Ignorar archivos y directorios de ROS2
+*.pyc
+*.pyo
+*.egg-info/
+__pycache__/
