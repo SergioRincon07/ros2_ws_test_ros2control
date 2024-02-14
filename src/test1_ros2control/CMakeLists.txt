@@ -41,7 +41,7 @@ install(
   DESTINATION include/test1_ros2control
 )
 install(
-  DIRECTORY description/launch description/ros2_control description/urdf
+  DIRECTORY description/launch description/ros2_control description/urdf description/rviz
   DESTINATION share/test1_ros2control
 )
 install(
