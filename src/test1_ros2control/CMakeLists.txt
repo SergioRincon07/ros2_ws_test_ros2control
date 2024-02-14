@@ -6,10 +6,54 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+)
+
+# find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
+
+## COMPILE
+add_library(
+  test1_ros2control
+  SHARED
+  hardware/rrbot.cpp
+)
+target_compile_features(test1_ros2control PUBLIC cxx_std_17)
+target_include_directories(test1_ros2control PUBLIC
+$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
+$<INSTALL_INTERFACE:include/test1_ros2control>
+)
+ament_target_dependencies(
+  test1_ros2control PUBLIC
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
+# INSTALL
+install(
+  DIRECTORY hardware/include/
+  DESTINATION include/test1_ros2control
+)
+install(
+  DIRECTORY description/launch description/ros2_control description/urdf
+  DESTINATION share/test1_ros2control
+)
+install(
+  DIRECTORY bringup/launch bringup/config
+  DESTINATION share/test1_ros2control
+)
+install(TARGETS test1_ros2control
+  EXPORT export_test1_ros2control
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -23,4 +67,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+## EXPORTS
+ament_export_targets(export_test1_ros2control HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

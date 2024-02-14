@@ -1,4 +1,4 @@
-# ros2_control_demo_example_1
+# test1_ros2control
 
    *RRBot* - or ''Revolute-Revolute Manipulator Robot'' - a simple position controlled robot with one hardware interface. This example also demonstrates the switching between different controllers.
 
