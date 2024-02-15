@@ -24,14 +24,14 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Declare arguments
     declared_arguments = []
-    # declared_arguments.append(
-    #     DeclareLaunchArgument(
-    #         "description_rviz",
-    #         default_value="rrbot.rviz",
-    #         description="Description package with robot URDF/xacro files. Usually the argument \
-    #     is not set, it enables use of a custom description.",
-    #     )
-    # )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "description_rviz",
+            default_value="rrbot.rviz",
+            description="Description package with robot URDF/xacro files. Usually the argument \
+        is not set, it enables use of a custom description.",
+        )
+    )
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file",
@@ -58,7 +58,7 @@ def generate_launch_description():
     )
 
     # Initialize Arguments
-    # description_rviz = LaunchConfiguration("description_rviz")
+    description_rviz = LaunchConfiguration("description_rviz")
     description_file = LaunchConfiguration("description_file")
     gui = LaunchConfiguration("gui")
     prefix = LaunchConfiguration("prefix")
@@ -69,7 +69,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("test1_ros2control"), "urdf", description_file]
+                [FindPackageShare("test2_ros2control"), "urdf", description_file]
             ),
             " ",
             "prefix:=",
@@ -78,9 +78,9 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": robot_description_content}
 
-    # rviz_config_file = PathJoinSubstitution(
-    #     [FindPackageShare("test1_ros2control"), "rviz", description_rviz]
-    # )
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare("test2_ros2control"), "rviz", description_rviz]
+    )
 
     joint_state_publisher_node = Node(
         package="joint_state_publisher_gui",
@@ -93,19 +93,19 @@ def generate_launch_description():
         output="both",
         parameters=[robot_description],
     )
-    # rviz_node = Node(
-    #     package="rviz2",
-    #     executable="rviz2",
-    #     name="rviz2",
-    #     output="log",
-    #     arguments=["-d", rviz_config_file],
-    #     condition=IfCondition(gui),
-    # )
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_file],
+        condition=IfCondition(gui),
+    )
 
     nodes = [
         joint_state_publisher_node,
         robot_state_publisher_node,
-        # rviz_node,
+        rviz_node,
     ]
 
     return LaunchDescription(declared_arguments + nodes)
