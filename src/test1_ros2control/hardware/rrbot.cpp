@@ -134,6 +134,11 @@ RRBotSystemPositionOnlyHardware::export_state_interfaces()
   {
     state_interfaces.emplace_back(hardware_interface::StateInterface(
       info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
+
+    RCLCPP_INFO(
+      rclcpp::get_logger("Export_State_Interface"), 
+      "state_interfaces_1 %s\n", 
+      state_interfaces[i].get_name().c_str());
   }
 
   return state_interfaces;
@@ -147,6 +152,12 @@ RRBotSystemPositionOnlyHardware::export_command_interfaces()
   {
     command_interfaces.emplace_back(hardware_interface::CommandInterface(
       info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
+    
+    RCLCPP_INFO(
+      rclcpp::get_logger("Export_Command_Interface"), 
+      "command_interfaces_1 %s\n", 
+      command_interfaces[i].get_name().c_str());
+
   }
 
   return command_interfaces;
