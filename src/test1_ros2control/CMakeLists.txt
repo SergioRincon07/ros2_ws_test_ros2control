@@ -35,6 +35,13 @@ ament_target_dependencies(
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
+# Causes the visibility macros to use dllexport rather than dllimport,
+# which is appropriate when building the dll but not consuming it.
+target_compile_definitions(${PROJECT_NAME} PRIVATE "TEST1_ROS2CONTROL_BUILDING_DLL")
+
+# Export hardware plugins
+pluginlib_export_plugin_description_file(hardware_interface test1_ros2control.xml)
+
 # INSTALL
 install(
   DIRECTORY hardware/include/

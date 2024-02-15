@@ -28,6 +28,14 @@ def generate_launch_description():
     declared_arguments = []
     declared_arguments.append(
         DeclareLaunchArgument(
+            "description_rviz",
+            default_value="rrbot.rviz",
+            description="Description package with robot URDF/xacro files. Usually the argument \
+        is not set, it enables use of a custom description.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
             "gui",
             default_value="true",
             description="Start RViz2 automatically with this launch file.",
@@ -35,6 +43,7 @@ def generate_launch_description():
     )
 
     # Initialize Arguments
+    description_rviz = LaunchConfiguration("description_rviz")
     gui = LaunchConfiguration("gui")
 
     # Get URDF via xacro
@@ -60,8 +69,9 @@ def generate_launch_description():
             "rrbot_controllers.yaml",
         ]
     )
+
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("ros2_control_demo_description"), "rrbot/rviz", "rrbot.rviz"]
+        [FindPackageShare("test1_ros2control"), "rviz", description_rviz]
     )
 
     control_node = Node(
