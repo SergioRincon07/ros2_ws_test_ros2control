@@ -95,13 +95,11 @@ hardware_interface::CallbackReturn RRBotSystemPositionOnlyHardware::on_configure
     "Nombre: %s\n"
     "Tipo: %s\n"
     "Joints: %zu\n"
-    "Joint Name 1: %s\n"
     "Joint Name 1: %s\n",
     info_.name.c_str(),
     info_.type.c_str(),
     info_.joints.size(),
-    info_.joints[0].name.c_str(),
-    info_.joints[1].name.c_str());
+    info_.joints[0].name.c_str());
 
   // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
   RCLCPP_INFO(
