@@ -11,16 +11,39 @@
     <xacro:property name="wheel_mass" value="0.3" /> <!-- Masa de las ruedas -->
     <xacro:property name="wheel_len" value="0.020" /> <!-- Longitud de las ruedas -->
     <xacro:property name="wheel_radius" value="0.015" /> <!-- Radio de las ruedas --> 
-    <xacro:property name="z_offset" value="-${base_height/2}" /> <!-- Desplazamiento vertical de la base del robot -->
+    <xacro:property name="z_offset" value="${base_height/2}" /> <!-- Desplazamiento vertical de la base del robot -->
     
     <!-- Se define el enlace de la base del robot -->
     <link name="${prefix}base_link">
+      <collision>
+        <origin xyz="0 0 ${base_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${base_width} ${base_length} ${base_height}"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 ${base_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${base_width} ${base_length} ${base_height}"/>
+        </geometry>
+        <material name="orange"/>
+      </visual>
+
+      <inertial>
+        <origin xyz="0 0 ${base_height/2}" rpy="0 0 0"/>
+        <mass value="${base_mass}"/>
+        <inertia
+          ixx="${base_mass / 12.0 * (base_length*base_length + base_height*base_height)}" ixy="0.0" ixz="0.0"
+          iyy="${base_mass / 12.0 * (base_height*base_height + base_width*base_width)}" iyz="0.0"
+          izz="${base_mass / 12.0 * (base_width*base_width + base_length*base_length)}"/>
+      </inertial>
     </link>
 
     <joint name="${prefix}wheel_joint" type="continuous">
       <parent link="${prefix}base_link"/>
       <child link="${prefix}wheel"/>
-      <origin xyz="0 -${base_width/2} ${z_offset}" rpy="0 0 0"/>
+      <origin xyz="${base_width/4} -${base_width/2 + wheel_len/2 + 0.001} 0" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
       <dynamics damping="0.2"/>
       <limit effort="100" velocity="1.0"/>
