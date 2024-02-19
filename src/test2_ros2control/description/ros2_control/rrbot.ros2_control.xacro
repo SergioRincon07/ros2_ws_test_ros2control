@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="rrbot_ros2_control" params="name prefix">
+
+    <ros2_control name="${name}" type="system">
+      <hardware>
+        <plugin>test2_ros2control/RRBotWheelPosition</plugin>
+        <param name="hw_start_duration_sec">0</param>
+        <param name="hw_stop_duration_sec">3.0</param>
+        <param name="hw_slowdown">10</param>
+      </hardware>
+
+      <joint name="${prefix}wheel_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+      </joint>
+    </ros2_control>
+
+  </xacro:macro>
+
+</robot>
