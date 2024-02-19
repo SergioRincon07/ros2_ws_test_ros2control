@@ -8,10 +8,10 @@
         <plugin>test2_ros2control/RRBotWheelPosition</plugin>
         <param name="hw_start_duration_sec">0</param>
         <param name="hw_stop_duration_sec">3.0</param>
-        <param name="hw_slowdown">100</param>
+        <param name="hw_slowdown">10</param>
       </hardware>
 
-      <joint name="${prefix}joint1">
+      <joint name="${prefix}wheel_joint">
         <command_interface name="position"/>
         <state_interface name="position"/>
       </joint>

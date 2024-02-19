@@ -11,5 +11,5 @@ controller_manager:
 forward_position_controller:
   ros__parameters:
     joints:
-      - joint1
+      - wheel_joint
     interface_name: position
