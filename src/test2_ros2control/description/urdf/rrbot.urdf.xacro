@@ -11,11 +11,8 @@
   <!-- Import RRBot ros2_control description -->
   <xacro:include filename="$(find test2_ros2control)/ros2_control/rrbot.ros2_control.xacro" />
 
-  <xacro:rrbot prefix="$(arg prefix)">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </xacro:rrbot>
+  <xacro:rrbot prefix="$(arg prefix)"/>
 
-  <xacro:rrbot_ros2_control
-    name="RRBot" prefix="$(arg prefix)" />
+  <xacro:rrbot_ros2_control name="RRBot" prefix="$(arg prefix)" />
 
 </robot>

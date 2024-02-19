@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:macro name="rrbot" params="prefix *origin">
+  <xacro:macro name="rrbot" params="prefix">
 
     <!-- Definición de constantes para las dimensiones del robot -->
     <xacro:property name="PI" value="3.1415926535897931"/>
