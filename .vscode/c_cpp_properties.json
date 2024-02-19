@@ -9,7 +9,8 @@
                 "/opt/ros/humble/include/**",
                 "/home/sergio/Documents/ROS2/ros2_ws_test_ros2control/src/test1_ros2control/include/**",
                 "/usr/include/**",
-                "${workspaceFolder}/src/test1_ros2control/hardware/include"
+                "${workspaceFolder}/src/test1_ros2control/hardware/include",
+                "${workspaceFolder}/src/test2_ros2control/hardware/include"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",
