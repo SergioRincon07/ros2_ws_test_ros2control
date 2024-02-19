@@ -31,11 +31,11 @@
 namespace test2_ros2control
 {
 // Clase que representa el hardware de un sistema RRBot con control de posición solamente
-class RRBotSystemPositionOnlyHardware : public hardware_interface::SystemInterface
+class RRBotWheelPosition : public hardware_interface::SystemInterface
 {
 public:
   // Define las convenciones de puntero compartido para esta clase
-  RCLCPP_SHARED_PTR_DEFINITIONS(RRBotSystemPositionOnlyHardware)
+  RCLCPP_SHARED_PTR_DEFINITIONS(RRBotWheelPosition)
 
   // Función que se llama cuando se inicializa el hardware
   TEST2_ROS2CONTROL_PUBLIC

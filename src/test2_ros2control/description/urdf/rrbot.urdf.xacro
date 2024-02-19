@@ -9,7 +9,7 @@
   <xacro:include filename="rrbot.materials.xacro" />
 
   <!-- Import RRBot ros2_control description -->
-  <!-- <xacro:include filename="$(find test1_ros2control)/ros2_control/rrbot.ros2_control.xacro" /> -->
+  <xacro:include filename="$(find test2_ros2control)/ros2_control/rrbot.ros2_control.xacro" />
 
   <xacro:rrbot prefix="$(arg prefix)">
     <origin xyz="0 0 0" rpy="0 0 0" />
