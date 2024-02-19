@@ -27,7 +27,7 @@
 namespace test2_ros2control
 {
 // Implementación de la función que se llama al inicializar el hardware
-hardware_interface::CallbackReturn RRBotWheelPosition::on_init(
+hardware_interface::CallbackReturn RRBotWheelVelocity::on_init(
   const hardware_interface::HardwareInfo & info)
 {
   // Verifica si la inicialización del hardware base fue exitosa
@@ -42,8 +42,8 @@ hardware_interface::CallbackReturn RRBotWheelPosition::on_init(
   hw_stop_sec_ = stod(info_.hardware_parameters["hw_stop_duration_sec"]);
   hw_slowdown_ = stod(info_.hardware_parameters["hw_slowdown"]);
   // Inicializa vectores para estados y comandos
-  hw_position_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-  hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+  hw_velocity_state_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+  hw_velocity_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
   // Se verifica si cada articulación tiene interfaces válidas de comando y estado.
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
@@ -52,7 +52,7 @@ hardware_interface::CallbackReturn RRBotWheelPosition::on_init(
     if (joint.command_interfaces.size() != hardware_constants::NUM_COMMANDS)
     {
       RCLCPP_FATAL(
-          rclcpp::get_logger("RRBotWheelPosition"),
+          rclcpp::get_logger("RRBotWheelVelocity"),
           "La articulación '%s' tiene %zu interfaces de comando. Se esperaba 1.", joint.name.c_str(),
           joint.command_interfaces.size());
 
@@ -60,12 +60,12 @@ hardware_interface::CallbackReturn RRBotWheelPosition::on_init(
     }
 
     // Se verifica que las interfaces de comando sean del tipo (se llamen igual) al que se define en ros2_control.xaxro.
-    if (joint.command_interfaces[0].name != hardware_constants::HW_IF_POSITION)
+    if (joint.command_interfaces[0].name != hardware_constants::HW_IF_VELOCITY)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("RRBotWheelPosition"),
+        rclcpp::get_logger("RRBotWheelVelocity"),
         "La articulación '%s' tiene %s interfaces de comando encontradas. Se esperaba '%s'.", joint.name.c_str(),
-        joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
+        joint.command_interfaces[0].name.c_str(), hardware_constants::HW_IF_VELOCITY);
       return hardware_interface::CallbackReturn::ERROR;
     }
 
@@ -73,19 +73,19 @@ hardware_interface::CallbackReturn RRBotWheelPosition::on_init(
     if (joint.state_interfaces.size() != hardware_constants::NUM_INTERFACES)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("RRBotWheelPosition"),
+        rclcpp::get_logger("RRBotWheelVelocity"),
         "La articulación '%s' tiene %zu interfaces de estado. Se esperaba 1.", joint.name.c_str(),
         joint.state_interfaces.size());
       return hardware_interface::CallbackReturn::ERROR;
     }
 
     // Se verifica que las interfaces de estado sean del tipo (se llamen igual) al que se define en ros2_control.xaxro.
-    if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+    if (joint.state_interfaces[0].name != hardware_constants::HW_IF_VELOCITY)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("RRBotWheelPosition"),
+        rclcpp::get_logger("RRBotWheelVelocity"),
         "La articulación '%s' tiene interfaz de estado %s. Se esperaba '%s'.", joint.name.c_str(),
-        joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
+        joint.state_interfaces[0].name.c_str(), hardware_constants::HW_IF_VELOCITY);
       return hardware_interface::CallbackReturn::ERROR;
     }
   }
@@ -93,40 +93,40 @@ hardware_interface::CallbackReturn RRBotWheelPosition::on_init(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn RRBotWheelPosition::on_configure(
+hardware_interface::CallbackReturn RRBotWheelVelocity::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(
-    rclcpp::get_logger("RRBotWheelPosition"), "Configuring ...please wait...");
+    rclcpp::get_logger("RRBotWheelVelocity"), "Configuring ...please wait...");
 
   for (int i = 0; i < hw_start_sec_; i++)
   {
     rclcpp::sleep_for(std::chrono::seconds(1));
     RCLCPP_INFO(
-      rclcpp::get_logger("RRBotWheelPosition"), "%.1f seconds left...",
+      rclcpp::get_logger("RRBotWheelVelocity"), "%.1f seconds left...",
       hw_start_sec_ - i);
   }
 
   // reset values always when configuring hardware
-  for (uint i = 0; i < hw_position_.size(); i++)
+  for (uint i = 0; i < hw_velocity_state_.size(); i++)
   {
-    hw_position_[i] = 0;
-    hw_commands_[i] = 0;
+    hw_velocity_state_[i] = 0;
+    hw_velocity_commands_[i] = 0;
   }
 
-  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelPosition"), "Successfully configured!");
+  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Successfully configured!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 std::vector<hardware_interface::StateInterface>
-RRBotWheelPosition::export_state_interfaces()
+RRBotWheelVelocity::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
   for (uint i = 0; i < info_.joints.size(); i++)
   {
     state_interfaces.emplace_back(hardware_interface::StateInterface(
-      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_position_[i]));
+      info_.joints[i].name, hardware_constants::HW_IF_VELOCITY, &hw_velocity_state_[i]));
 
     RCLCPP_INFO(
       rclcpp::get_logger("Export_State_Interface"), 
@@ -138,13 +138,13 @@ RRBotWheelPosition::export_state_interfaces()
 }
 
 std::vector<hardware_interface::CommandInterface>
-RRBotWheelPosition::export_command_interfaces()
+RRBotWheelVelocity::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
   for (uint i = 0; i < info_.joints.size(); i++)
   {
     command_interfaces.emplace_back(hardware_interface::CommandInterface(
-      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
+      info_.joints[i].name, hardware_constants::HW_IF_VELOCITY, &hw_velocity_commands_[i]));
     
     RCLCPP_INFO(
       rclcpp::get_logger("Export_Command_Interface"), 
@@ -156,89 +156,89 @@ RRBotWheelPosition::export_command_interfaces()
   return command_interfaces;
 }
 
-hardware_interface::CallbackReturn RRBotWheelPosition::on_activate(
+hardware_interface::CallbackReturn RRBotWheelVelocity::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
   RCLCPP_INFO(
-    rclcpp::get_logger("RRBotWheelPosition"), "Activating ...please wait...");
+    rclcpp::get_logger("RRBotWheelVelocity"), "Activating ...please wait...");
 
   for (int i = 0; i < hw_start_sec_; i++)
   {
     rclcpp::sleep_for(std::chrono::seconds(1));
     RCLCPP_INFO(
-      rclcpp::get_logger("RRBotWheelPosition"), "%.1f seconds left...",
+      rclcpp::get_logger("RRBotWheelVelocity"), "%.1f seconds left...",
       hw_start_sec_ - i);
   }
   // END: This part here is for exemplary purposes - Please do not copy to your production code
 
   // command and state should be equal when starting
-  for (uint i = 0; i < hw_position_.size(); i++)
+  for (uint i = 0; i < hw_velocity_state_.size(); i++)
   {
-    hw_commands_[i] = hw_position_[i];
+    hw_velocity_commands_[i] = hw_velocity_state_[i];
   }
 
-  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelPosition"), "Successfully activated!");
+  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn RRBotWheelPosition::on_deactivate(
+hardware_interface::CallbackReturn RRBotWheelVelocity::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
   RCLCPP_INFO(
-    rclcpp::get_logger("RRBotWheelPosition"), "Deactivating ...please wait...");
+    rclcpp::get_logger("RRBotWheelVelocity"), "Deactivating ...please wait...");
 
   for (int i = 0; i < hw_stop_sec_; i++)
   {
     rclcpp::sleep_for(std::chrono::seconds(1));
     RCLCPP_INFO(
-      rclcpp::get_logger("RRBotWheelPosition"), "%.1f seconds left...",
+      rclcpp::get_logger("RRBotWheelVelocity"), "%.1f seconds left...",
       hw_stop_sec_ - i);
   }
 
-  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelPosition"), "Successfully deactivated!");
+  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Successfully deactivated!");
   // END: This part here is for exemplary purposes - Please do not copy to your production code
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type RRBotWheelPosition::read(
+hardware_interface::return_type RRBotWheelVelocity::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelPosition"), "Reading...");
+  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Reading...");
 
-  for (uint i = 0; i < hw_position_.size(); i++)
+  for (uint i = 0; i < hw_velocity_state_.size(); i++)
   {
     // Simulate RRBot's movement
-    hw_position_[i] = hw_position_[i] + (hw_commands_[i] - hw_position_[i]) / hw_slowdown_;
+    hw_velocity_state_[i] = hw_velocity_state_[i] + (hw_velocity_commands_[i] - hw_velocity_state_[i]) / hw_slowdown_;
     RCLCPP_INFO(
-      rclcpp::get_logger("RRBotWheelPosition"), "Got state %.5f for joint %d!",
-      hw_position_[i], i);
+      rclcpp::get_logger("RRBotWheelVelocity"), "Got state %.5f for joint %d!",
+      hw_velocity_state_[i], i);
   }
-  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelPosition"), "Joints successfully read!");
+  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Joints successfully read!");
   // END: This part here is for exemplary purposes - Please do not copy to your production code
 
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type RRBotWheelPosition::write(
+hardware_interface::return_type RRBotWheelVelocity::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelPosition"), "Writing...");
+  RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Writing...");
 
-  for (uint i = 0; i < hw_commands_.size(); i++)
+  for (uint i = 0; i < hw_velocity_commands_.size(); i++)
   {
     // Simulate sending commands to the hardware
     RCLCPP_INFO(
-      rclcpp::get_logger("RRBotWheelPosition"), "Got command %.5f for joint %d!",
-      hw_commands_[i], i);
+      rclcpp::get_logger("RRBotWheelVelocity"), "Got command %.5f for joint %d!",
+      hw_velocity_commands_[i], i);
   }
   RCLCPP_INFO(
-    rclcpp::get_logger("RRBotWheelPosition"), "Joints successfully written!");
+    rclcpp::get_logger("RRBotWheelVelocity"), "Joints successfully written!");
   // END: This part here is for exemplary purposes - Please do not copy to your production code
 
   return hardware_interface::return_type::OK;
@@ -249,4 +249,4 @@ hardware_interface::return_type RRBotWheelPosition::write(
 #include "pluginlib/class_list_macros.hpp"
 
 PLUGINLIB_EXPORT_CLASS(
-  test2_ros2control::RRBotWheelPosition, hardware_interface::SystemInterface)
+  test2_ros2control::RRBotWheelVelocity, hardware_interface::SystemInterface)

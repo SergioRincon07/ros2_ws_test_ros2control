@@ -31,11 +31,11 @@
 namespace test2_ros2control
 {
 // Clase que representa el hardware de un sistema RRBot con control de posición solamente
-class RRBotWheelPosition : public hardware_interface::SystemInterface
+class RRBotWheelVelocity : public hardware_interface::SystemInterface
 {
 public:
   // Define las convenciones de puntero compartido para esta clase
-  RCLCPP_SHARED_PTR_DEFINITIONS(RRBotWheelPosition)
+  RCLCPP_SHARED_PTR_DEFINITIONS(RRBotWheelVelocity)
 
   // Función que se llama cuando se inicializa el hardware
   TEST2_ROS2CONTROL_PUBLIC
@@ -82,8 +82,8 @@ private:
   double hw_slowdown_;  // Tiempo de desaceleración entre lectura y escritura
 
   // Almacena los comandos para el robot simulado
-  std::vector<double> hw_commands_;
-  std::vector<double> hw_position_;
+  std::vector<double> hw_velocity_commands_;
+  std::vector<double> hw_velocity_state_;
 };
 
 }  // namespace TEST2_ROS2CONTROL
