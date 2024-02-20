@@ -5,7 +5,7 @@
 
     <ros2_control name="${name}" type="system">
       <hardware>
-        <plugin>test2_ros2control/RRBotWheelPosition</plugin>
+        <plugin>test2_ros2control/RRBotWheelVelocity</plugin>
         <param name="hw_start_duration_sec">0</param>
         <param name="hw_stop_duration_sec">3.0</param>
         <param name="hw_slowdown">10</param>

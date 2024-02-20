@@ -205,18 +205,22 @@ hardware_interface::CallbackReturn RRBotWheelVelocity::on_deactivate(
 }
 
 hardware_interface::return_type RRBotWheelVelocity::read(
-  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
   // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
   RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Reading...");
 
-  for (uint i = 0; i < hw_position_state_.size(); i++)
+  for (std::size_t i = 0; i < hw_velocity_commands_.size(); i++)
   {
-    // Simulate RRBot's movement
-    hw_position_state_[i] = hw_position_state_[i] + (hw_velocity_commands_[i] - hw_position_state_[i]) / hw_slowdown_;
+    // Simulate DiffBot wheels's movement as a first-order system
+    // Update the joint status: this is a revolute joint without any limit.
+    // Simply integrates
+    hw_position_state_[i] = hw_position_state_[i] + period.seconds() * hw_velocity_commands_[i];
+
     RCLCPP_INFO(
-      rclcpp::get_logger("RRBotWheelVelocity"), "Got state %.5f for joint %d!",
-      hw_position_state_[i], i);
+      rclcpp::get_logger("DiffBotSystemHardware"),
+      "Got position state %.5f and velocity state %.5f for '%s'!", hw_position_state_[i],
+      hw_velocity_commands_[i], info_.joints[i].name.c_str());
   }
   RCLCPP_INFO(rclcpp::get_logger("RRBotWheelVelocity"), "Joints successfully read!");
   // END: This part here is for exemplary purposes - Please do not copy to your production code

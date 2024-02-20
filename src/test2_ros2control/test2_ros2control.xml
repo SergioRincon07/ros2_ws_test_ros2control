@@ -1,6 +1,6 @@
 <library path="test2_ros2control">
-  <class name="test2_ros2control/RRBotWheelPosition"
-         type="test2_ros2control::RRBotWheelPosition"
+  <class name="test2_ros2control/RRBotWheelVelocity"
+         type="test2_ros2control::RRBotWheelVelocity"
          base_class_type="hardware_interface::SystemInterface">
     <description>
       The ros2_control RRbot example using a system hardware interface-type.
