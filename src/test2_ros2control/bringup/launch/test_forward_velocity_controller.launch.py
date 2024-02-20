@@ -1,41 +1,32 @@
-# Copyright 2021 Stogl Robotics Consulting UG (haftungsbeschränkt)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import Float64MultiArray
+import time
 
-from launch import LaunchDescription
-from launch.substitutions import PathJoinSubstitution
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
+class VelocityPublisher(Node):
+    def __init__(self):
+        super().__init__('velocity_publisher')
+        self.publisher_ = self.create_publisher(Float64MultiArray, '/forward_velocity_controller/commands', 10)
+        self.velocity_sequence = [0.5, 0.8, 1.0, 0.2]  # Ejemplo de secuencia de velocidades
+        self.sequence_index = 0
+        self.timer = self.create_timer(10, self.publish_next_velocity)
 
+    def publish_next_velocity(self):
+        if self.sequence_index < len(self.velocity_sequence):
+            msg = Float64MultiArray()
+            msg.data = [self.velocity_sequence[self.sequence_index]]
+            self.publisher_.publish(msg)
+            self.get_logger().info('Publicando velocidad: %s' % str(self.velocity_sequence[self.sequence_index]))
+            self.sequence_index += 1
+        else:
+            self.get_logger().info('Secuencia de velocidades completada.')
 
-def generate_launch_description():
+def main(args=None):
+    rclpy.init(args=args)
+    velocity_publisher = VelocityPublisher()
+    rclpy.spin(velocity_publisher)
+    velocity_publisher.destroy_node()
+    rclpy.shutdown()
 
-    position_goals = PathJoinSubstitution(
-        [
-            FindPackageShare("test2_ros2control"),
-            "config",
-            "rrbot_forward_velocity_publisher.yaml",
-        ]
-    )
-
-    return LaunchDescription(
-        [
-            Node(
-                package="ros2_controllers_test_nodes",
-                executable="publisher_forward_velocity_controller",
-                name="publisher_forward_velocity_controller",
-                parameters=[position_goals],
-                output="both",
-            )
-        ]
-    )
+if __name__ == '__main__':
+    main()
