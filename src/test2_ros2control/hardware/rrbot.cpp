@@ -215,6 +215,14 @@ hardware_interface::return_type RRBotWheelVelocity::read(
     // Simulate DiffBot wheels's movement as a first-order system
     // Update the joint status: this is a revolute joint without any limit.
     // Simply integrates
+
+    RCLCPP_INFO(
+      rclcpp::get_logger("Inputs"), 
+      "hw_velocity_commands %lf\n"
+      "hw_position_state %lf\n", 
+      hw_velocity_commands_[i],
+      hw_position_state_[i]);
+
     hw_position_state_[i] = hw_position_state_[i] + period.seconds() * hw_velocity_commands_[i];
 
     RCLCPP_INFO(
