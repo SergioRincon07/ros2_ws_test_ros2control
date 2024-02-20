@@ -12,7 +12,7 @@ namespace hardware_constants
     /// Constant defining effort interface
     constexpr char HW_IF_EFFORT[] = "effort";
     /// Number of hardware interfaces
-    constexpr int NUM_INTERFACES = 1;
+    constexpr int NUM_STATE = 1;
     /// Number of commands
     constexpr int NUM_COMMANDS = 1;
 } // namespace hardware_constants

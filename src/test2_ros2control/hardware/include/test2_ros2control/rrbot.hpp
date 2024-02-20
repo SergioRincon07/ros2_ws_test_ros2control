@@ -83,7 +83,7 @@ private:
 
   // Almacena los comandos para el robot simulado
   std::vector<double> hw_velocity_commands_;
-  std::vector<double> hw_velocity_state_;
+  std::vector<double> hw_position_state_;
 };
 
 }  // namespace TEST2_ROS2CONTROL

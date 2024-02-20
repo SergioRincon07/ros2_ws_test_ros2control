@@ -8,7 +8,7 @@ controller_manager:
     forward_velocity_controller:
       type: forward_command_controller/ForwardCommandController
 
-forward_position_controller:
+forward_velocity_controller:
   ros__parameters:
     joints:
       - wheel_joint
