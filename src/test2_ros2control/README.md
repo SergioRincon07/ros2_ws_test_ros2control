@@ -48,12 +48,14 @@ Este repositorio contiene archivos relacionados con el control ROS 2 (Robot Oper
 
 ## Descripción
 
-La carpeta `description` contiene archivos relacionados con la descripción del robot RRBot, incluyendo su modelo URDF, materiales, lanzamiento de RViz y lanzamiento de visualización del robot.
+La carpeta `description` contiene archivos relacionados con la descripción del robot RRBot, incluyendo su modelo URDF, el archivo de ros2_control, materiales, lanzamiento de RViz y lanzamiento de visualización del robot.
 
 - `launch`: Contiene un archivo `view_robot.launch.py` para visualizar el robot en RViz.
 - `ros2_control`: Contiene el archivo `rrbot.ros2_control.xacro` para la definición del controlador ROS 2 del RRBot.
 - `rviz`: Contiene el archivo `rrbot.rviz` para la configuración de la visualización en RViz.
 - `urdf`: Contiene los archivos `.xacro` relacionados con la descripción URDF del RRBot.
+
+
 
 ## Hardware
 
